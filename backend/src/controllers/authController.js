@@ -67,8 +67,8 @@ exports.login = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email and password are required' });
     }
 
-    // Find user by email
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    // Find user by email and include password field for verification
+    const user = await User.findOne({ email: email.toLowerCase().trim() }).select('+password');
     if (!user) {
       return res.status(400).json({ success: false, message: 'Invalid email or password' });
     }
@@ -81,15 +81,14 @@ exports.login = async (req, res) => {
 
     const token = generateToken(user._id);
 
-    return res.status(200).json({
-      success: true,
-      token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email
-      }
-    });
+    // Return user data without password
+    const responseUser = {
+      id: user._id,
+      username: user.username,
+      email: user.email
+    };
+
+    return res.status(200).json({ success: true, token, user: responseUser });
   } catch (error) {
     console.error('Login error:', error);
     return res.status(500).json({ success: false, message: 'Server error during login' });

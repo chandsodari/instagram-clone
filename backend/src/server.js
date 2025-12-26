@@ -1,19 +1,29 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
 
-// Middleware - Allow frontend origins
-const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? ['https://instagram-clone.vercel.app']
-  : ['http://localhost:3000', 'http://localhost:8080'];
+// Security middlewares
+app.use(helmet());
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // limit each IP to 200 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(limiter);
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
+// Middleware - Allow frontend origins (prefer explicit FRONTEND_URL in env)
+const defaultOrigins = ['http://localhost:3000', 'http://localhost:8080'];
+const allowedOrigins = process.env.FRONTEND_URL
+  ? [process.env.FRONTEND_URL]
+  : (process.env.NODE_ENV === 'production' ? ['https://instagram-clone.vercel.app'] : defaultOrigins);
+
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 // Increase JSON body size to allow base64 image uploads from the frontend
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));

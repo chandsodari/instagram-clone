@@ -190,3 +190,38 @@ MIT License - feel free to use this project for learning
 ## Support
 
 Need help? Check the code comments and understand how each part works!
+
+## Deploying (quick guide)
+
+1. Create a GitHub repository and push your code (from repo root):
+
+```bash
+git remote remove origin || true
+git remote add origin https://github.com/YOUR_USERNAME/instagram-clone.git
+git branch -M main
+git push -u origin main
+```
+
+2. Backend (Render):
+- In Render, create a **Web Service** from your GitHub repo. Set the root to `/backend`.
+- Build command: `npm install`
+- Start command: `npm start`
+- Add environment variables in Render dashboard: `MONGODB_URI`, `JWT_SECRET`, `NODE_ENV=production`, `FRONTEND_URL` (your frontend URL).
+
+3. Frontend (Vercel):
+- Import the same GitHub repo into Vercel, and set the project root to `/frontend`.
+- Add environment variable `REACT_APP_API_URL` pointing to your deployed backend URL (e.g. `https://your-backend.onrender.com`).
+
+4. After deployment:
+- Ensure CORS `FRONTEND_URL` matches your frontend deployment domain.
+- Do not commit actual `.env` files — use host env vars.
+
+5. Locally (after these changes):
+- Install new backend deps before running:
+
+```bash
+cd backend
+npm install
+```
+
+The backend now includes basic security middlewares (Helmet and rate limiting). If you see "module not found" errors after pulling, run `npm install` in the `backend` folder.
