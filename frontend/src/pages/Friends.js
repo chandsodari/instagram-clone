@@ -13,7 +13,7 @@ function Friends() {
     }
     const fetch = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/users/${storedUser.id}`);
+        const res = await axios.get(`/api/users/${storedUser.id}`);
         setProfile(res.data);
       } catch (err) {
         console.error('Error fetching friends:', err);
@@ -26,7 +26,7 @@ function Friends() {
 
   const handleSendRequest = async (id) => {
     try {
-      await axios.post(`http://localhost:5000/api/users/${id}/friend-request`);
+      await axios.post(`/api/users/${id}/friend-request`);
       const storedUser = JSON.parse(localStorage.getItem('user'));
       const res = await axios.get(`http://localhost:5000/api/users/${storedUser.id}`);
       setProfile(res.data);
@@ -38,7 +38,7 @@ function Friends() {
 
   const handleAccept = async (id) => {
     try {
-      await axios.post(`http://localhost:5000/api/users/${id}/friend-accept`);
+      await axios.post(`/api/users/${id}/friend-accept`);
       const storedUser = JSON.parse(localStorage.getItem('user'));
       const res = await axios.get(`http://localhost:5000/api/users/${storedUser.id}`);
       setProfile(res.data);

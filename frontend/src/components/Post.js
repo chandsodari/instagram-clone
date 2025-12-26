@@ -10,10 +10,10 @@ function Post({ post, onPostUpdated }) {
   const handleLike = async () => {
     try {
       if (liked) {
-        await axios.post(`http://localhost:5000/api/posts/${post._id}/unlike`);
+        await axios.post(`/api/posts/${post._id}/unlike`);
         setLikes(likes - 1);
       } else {
-        await axios.post(`http://localhost:5000/api/posts/${post._id}/like`);
+        await axios.post(`/api/posts/${post._id}/like`);
         setLikes(likes + 1);
       }
       setLiked(!liked);

@@ -8,7 +8,7 @@ function Groups() {
 
   const fetch = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/groups');
+      const res = await axios.get('/api/groups');
       setGroups(res.data);
     } catch (err) {
       console.error('Error fetching groups', err);
@@ -20,7 +20,7 @@ function Groups() {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/groups', { name, description: desc });
+      await axios.post('/api/groups', { name, description: desc });
       setName(''); setDesc('');
       fetch();
     } catch (err) {
@@ -31,7 +31,7 @@ function Groups() {
 
   const handleJoin = async (id) => {
     try {
-      await axios.post(`http://localhost:5000/api/groups/${id}/join`);
+      await axios.post(`/api/groups/${id}/join`);
       fetch();
     } catch (err) {
       console.error(err);

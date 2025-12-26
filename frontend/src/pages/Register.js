@@ -52,7 +52,7 @@ function Register({ setUser }) {
     setError('');
     
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', {
+      const response = await axios.post('/api/auth/register', {
         username: formData.username.trim(),
         email: formData.email.trim(),
         password: formData.password

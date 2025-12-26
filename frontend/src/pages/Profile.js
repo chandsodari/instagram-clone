@@ -12,7 +12,7 @@ function Profile({ currentUser }) {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/users/${id}`);
+        const response = await axios.get(`/api/users/${id}`);
         setProfile(response.data);
         setIsFollowing(response.data.followers.some(f => f._id === currentUser.id));
         setLoading(false);
@@ -27,7 +27,7 @@ function Profile({ currentUser }) {
 
   const refetchProfile = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/users/${id}`);
+      const response = await axios.get(`/api/users/${id}`);
       setProfile(response.data);
       setIsFollowing(response.data.followers.some(f => f._id === currentUser.id));
     } catch (error) {
@@ -38,10 +38,10 @@ function Profile({ currentUser }) {
   const handleFollowToggle = async () => {
     try {
       if (isFollowing) {
-        await axios.post(`http://localhost:5000/api/users/${id}/unfollow`);
+        await axios.post(`/api/users/${id}/unfollow`);
         setIsFollowing(false);
       } else {
-        await axios.post(`http://localhost:5000/api/users/${id}/follow`);
+        await axios.post(`/api/users/${id}/follow`);
         setIsFollowing(true);
       }
       refetchProfile();
