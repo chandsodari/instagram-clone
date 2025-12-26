@@ -1,0 +1,16 @@
+{
+  "name": "instagram-clone-monorepo",
+  "version": "1.0.0",
+  "description": "Full-stack Instagram clone for practice coding",
+  "private": true,
+  "scripts": {
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend start\""
+  },
+  "keywords": ["instagram", "clone", "mern", "practice"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
