@@ -1,10 +1,4 @@
-cd c:\Users\chand\Desktop\ai\instagram-clone
-git init
-git add .
-git commit -m "ready-for-deployment"
-git branch -M main
-git remote add origin <YOUR_GITHUB_REPO_URL>
-git push -u origin mainconst mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 const postSchema = new mongoose.Schema({
   user: {
