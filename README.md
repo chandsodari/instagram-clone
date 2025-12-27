@@ -57,6 +57,7 @@ instagram-clone/
 
 ### Frontend
 - **React** - UI library
+- **Vite** - Build tool and dev server (replaces Create React App)
 - **React Router** - Navigation
 - **Axios** - HTTP client
 - **CSS** - Styling
@@ -100,12 +101,14 @@ cd frontend
 npm install
 ```
 
-Start the frontend:
+Start the frontend (using Vite):
 ```bash
-npm start
+npm run dev
 ```
 
 Frontend will run on `http://localhost:3000`
+
+> **Note:** This project uses **Vite** instead of Create React App for faster development and better performance.
 
 ## API Endpoints
 
@@ -145,6 +148,31 @@ This project teaches:
 - ✅ Protected routes
 - ✅ Error handling
 - ✅ CSS styling
+
+## Recent Improvements ✨
+
+### Backend Improvements
+- ✅ Enhanced models with database indexes for better performance
+- ✅ Improved error handling with consistent response format
+- ✅ Added input validation and sanitization
+- ✅ Better authentication middleware with user verification
+- ✅ Pagination support for posts
+- ✅ Improved MongoDB connection handling
+- ✅ Enhanced security with rate limiting and CORS configuration
+- ✅ Health check endpoint for monitoring
+
+### Frontend Improvements
+- ✅ Better error handling and user feedback
+- ✅ Loading states for better UX
+- ✅ Pagination support for posts feed
+- ✅ Improved form validation
+- ✅ Better error messages
+
+### Deployment
+- ✅ Deployment configuration files (Render & Vercel)
+- ✅ Comprehensive deployment guide
+- ✅ Environment variable examples
+- ✅ Deployment helper scripts
 
 ## Future Enhancements
 
@@ -191,37 +219,52 @@ MIT License - feel free to use this project for learning
 
 Need help? Check the code comments and understand how each part works!
 
-## Deploying (quick guide)
+## Quick Deployment Guide 🚀
 
-1. Create a GitHub repository and push your code (from repo root):
+For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md)
 
+### Quick Start:
+
+1. **Set up MongoDB Atlas** (free tier available)
+2. **Deploy Backend to Render:**
+   - Connect GitHub repo
+   - Root directory: `backend`
+   - Add env vars: `MONGODB_URI`, `JWT_SECRET`, `NODE_ENV=production`, `FRONTEND_URL`
+3. **Deploy Frontend to Vercel:**
+   - Connect GitHub repo
+   - Root directory: `frontend`
+   - Add env var: `REACT_APP_API_URL` (your Render backend URL)
+4. **Update CORS:** Set `FRONTEND_URL` in Render to match your Vercel URL
+
+### Using Deployment Scripts:
+
+**Windows:**
 ```bash
-git remote remove origin || true
-git remote add origin https://github.com/YOUR_USERNAME/instagram-clone.git
-git branch -M main
-git push -u origin main
+deploy.bat
 ```
 
-2. Backend (Render):
-- In Render, create a **Web Service** from your GitHub repo. Set the root to `/backend`.
-- Build command: `npm install`
-- Start command: `npm start`
-- Add environment variables in Render dashboard: `MONGODB_URI`, `JWT_SECRET`, `NODE_ENV=production`, `FRONTEND_URL` (your frontend URL).
-
-3. Frontend (Vercel):
-- Import the same GitHub repo into Vercel, and set the project root to `/frontend`.
-- Add environment variable `REACT_APP_API_URL` pointing to your deployed backend URL (e.g. `https://your-backend.onrender.com`).
-
-4. After deployment:
-- Ensure CORS `FRONTEND_URL` matches your frontend deployment domain.
-- Do not commit actual `.env` files — use host env vars.
-
-5. Locally (after these changes):
-- Install new backend deps before running:
-
+**Linux/Mac:**
 ```bash
-cd backend
-npm install
+chmod +x deploy.sh
+./deploy.sh
 ```
 
-The backend now includes basic security middlewares (Helmet and rate limiting). If you see "module not found" errors after pulling, run `npm install` in the `backend` folder.
+### Environment Variables:
+
+**Backend (.env):**
+```
+PORT=5000
+MONGODB_URI=mongodb+srv://...
+JWT_SECRET=your_secret_key
+NODE_ENV=production
+FRONTEND_URL=https://your-frontend.vercel.app
+```
+
+**Frontend (.env):**
+```
+VITE_API_URL=https://your-backend.onrender.com
+```
+
+> **Note:** Vite uses `VITE_` prefix for environment variables (not `REACT_APP_`)
+
+> ⚠️ **Important:** Never commit `.env` files. Use environment variables in your hosting platform.

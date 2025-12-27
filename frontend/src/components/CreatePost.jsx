@@ -6,6 +6,7 @@ function CreatePost({ onPostCreated }) {
   const [caption, setCaption] = useState('');
   const [image, setImage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -20,8 +21,16 @@ function CreatePost({ onPostCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    
     if (!image) {
-      alert('Please select an image');
+      setError('Please select an image');
+      return;
+    }
+
+    // Validate image size (10MB limit)
+    if (image.length > 10 * 1024 * 1024) {
+      setError('Image is too large. Please use an image smaller than 10MB.');
       return;
     }
 
@@ -29,14 +38,23 @@ function CreatePost({ onPostCreated }) {
     try {
       const response = await axios.post('/api/posts', {
         image,
-        caption
+        caption: caption.trim()
       });
-      onPostCreated(response.data.post);
-      setCaption('');
-      setImage('');
+      
+      if (response.data.success && response.data.post) {
+        onPostCreated(response.data.post);
+        setCaption('');
+        setImage('');
+        // Reset file input
+        const fileInput = document.getElementById('image');
+        if (fileInput) fileInput.value = '';
+      } else {
+        setError(response.data.message || 'Failed to create post');
+      }
     } catch (error) {
       console.error('Error creating post:', error);
-      alert('Error creating post');
+      const errorMessage = error.response?.data?.message || 'Error creating post. Please try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -71,7 +89,8 @@ function CreatePost({ onPostCreated }) {
             rows="3"
           />
         </div>
-        <button type="submit" disabled={loading}>
+        {error && <div className="error-message">{error}</div>}
+        <button type="submit" disabled={loading || !image}>
           {loading ? 'Posting...' : 'Post'}
         </button>
       </form>

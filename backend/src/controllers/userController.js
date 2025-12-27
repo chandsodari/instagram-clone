@@ -3,43 +3,123 @@ const User = require('../models/User');
 exports.getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
+      .select('-password')
       .populate('followers', 'username profilePicture')
       .populate('following', 'username profilePicture')
       .populate('friends', 'username profilePicture')
       .populate('incomingRequests', 'username profilePicture')
-      .populate('outgoingRequests', 'username profilePicture');
+      .populate('outgoingRequests', 'username profilePicture')
+      .lean();
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'User not found' 
+      });
     }
 
-    res.status(200).json(user);
+    res.status(200).json({
+      success: true,
+      user: {
+        ...user,
+        followerCount: user.followers ? user.followers.length : 0,
+        followingCount: user.following ? user.following.length : 0,
+        friendCount: user.friends ? user.friends.length : 0
+      }
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Get user error:', error);
+    if (error.name === 'CastError') {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Invalid user ID' 
+      });
+    }
+    res.status(500).json({ 
+      success: false,
+      message: error.message || 'Server error while fetching user' 
+    });
   }
 };
 
 exports.updateProfile = async (req, res) => {
   try {
     const { username, bio, profilePicture } = req.body;
+    const userId = req.params.id;
 
-    let user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    // Check if user is updating their own profile
+    if (userId !== req.user.id) {
+      return res.status(403).json({ 
+        success: false,
+        message: 'Not authorized to update this profile' 
+      });
     }
 
-    if (username) user.username = username;
-    if (bio) user.bio = bio;
-    if (profilePicture) user.profilePicture = profilePicture;
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'User not found' 
+      });
+    }
+
+    // Update fields if provided
+    if (username) {
+      if (username.length < 3) {
+        return res.status(400).json({ 
+          success: false,
+          message: 'Username must be at least 3 characters' 
+        });
+      }
+      user.username = username.trim().toLowerCase();
+    }
+    
+    if (bio !== undefined) {
+      if (bio.length > 500) {
+        return res.status(400).json({ 
+          success: false,
+          message: 'Bio cannot exceed 500 characters' 
+        });
+      }
+      user.bio = bio.trim();
+    }
+    
+    if (profilePicture) {
+      user.profilePicture = profilePicture.trim();
+    }
 
     await user.save();
 
     res.status(200).json({
       success: true,
-      user
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        bio: user.bio,
+        profilePicture: user.profilePicture,
+        createdAt: user.createdAt
+      }
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Update profile error:', error);
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      return res.status(400).json({ 
+        success: false,
+        message: `${field} already exists` 
+      });
+    }
+    if (error.name === 'CastError') {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Invalid user ID' 
+      });
+    }
+    res.status(500).json({ 
+      success: false,
+      message: error.message || 'Server error while updating profile' 
+    });
   }
 };
 

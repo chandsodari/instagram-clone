@@ -5,7 +5,8 @@ import Navbar from './components/Navbar';
 import Feed from './pages/Feed';
 
 // Set axios base URL for API calls (production or local)
-axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// Vite uses VITE_ prefix for environment variables
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -21,7 +22,16 @@ function App() {
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setUser(JSON.parse(localStorage.getItem('user')));
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        try {
+          setUser(JSON.parse(savedUser));
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+        }
+      }
     }
     setLoading(false);
   }, []);

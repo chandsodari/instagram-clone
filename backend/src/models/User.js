@@ -66,9 +66,34 @@ const userSchema = new mongoose.Schema({
   ],
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    index: true
   }
-}, { timestamps: true });
+}, { 
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+// Indexes for better query performance
+userSchema.index({ username: 1 }, { unique: true });
+userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ username: 'text', email: 'text' }); // Text search index
+
+// Virtual for follower count
+userSchema.virtual('followerCount').get(function() {
+  return this.followers ? this.followers.length : 0;
+});
+
+// Virtual for following count
+userSchema.virtual('followingCount').get(function() {
+  return this.following ? this.following.length : 0;
+});
+
+// Virtual for friend count
+userSchema.virtual('friendCount').get(function() {
+  return this.friends ? this.friends.length : 0;
+});
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {

@@ -2,14 +2,16 @@ services:
   - type: web
     name: instagram-clone-backend
     env: node
+    plan: free
     buildCommand: cd backend && npm install
     startCommand: cd backend && npm start
+    healthCheckPath: /health
     envVars:
       - key: MONGODB_URI
-        scope: build
         sync: false
       - key: JWT_SECRET
-        scope: build
         sync: false
       - key: NODE_ENV
         value: production
+      - key: FRONTEND_URL
+        sync: false
